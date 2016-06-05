@@ -5,6 +5,11 @@ import java.util.HashMap;
 
 import model.Circuit;
 
+/**
+ * This class have a purpose to launch an application, provide CLI to interact with user.
+ * @author Atit Leelasuksan
+ *
+ */
 public class Main {
 	public static void main(String[] args) {
 		boolean error = true;
