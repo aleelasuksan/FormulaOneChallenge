@@ -2,6 +2,10 @@ package model;
 
 /**
  * Car object for Circuit. consist of top speed, acceleration, nitro status, current speed and team.
+ * Car have a function to assess value of velocity (speed) and moved length for return back to circuit.
+ * Another function is handling function, purpose is to handle an event which affect driver decision
+ *  - close by any car within 10 meter, reduce speed scaled to handling factor value
+ *  - being a last place, use nitro
  * @author Atit Leelasuksan
  *
  */
@@ -38,24 +42,33 @@ public class Car {
 	 * @return how far car can go within second parameter time, meter unit
 	 */
 	public double assess(int second) {
-		double last_speed = current_speed + (acceleration * second);
 		double moved_length;
+		if (current_speed == top_speed) {
+			moved_length = current_speed*second;
+			previous_speed = current_speed;
+			// debug information
+//			System.out.println("New Current Speed (not changed): " + current_speed);
+			return moved_length;
+		}
+		double last_speed = current_speed + (acceleration * second);
 		if (current_speed < top_speed && last_speed > top_speed) {
 			double time_to_reach_top = (top_speed-current_speed)/acceleration;
 			double time_left = second - time_to_reach_top;
 			double time_to_reach_top_length = ((top_speed*top_speed) - (current_speed*current_speed)) / (2*acceleration);
 			double time_left_length = top_speed*time_left;
 			moved_length = time_to_reach_top_length + time_left_length;
-		} else if (current_speed == top_speed) {
-			moved_length = current_speed*second;
-		}
+		} 
 		// physics formula for static acceleration, s = ut + (0.5a)t^2
 		else moved_length = (current_speed*second)+(0.5*acceleration*second*second);
+		// physics formula v^2 = u^2 + 2as
+//		else moved_length = ( (last_speed*last_speed)-(current_speed*current_speed) ) / (2.0*acceleration);
 		previous_speed = current_speed;
 		current_speed = last_speed;
-		System.out.println("Last Speed: " + last_speed);
+		// debug information
+//		System.out.println("Last Speed: " + last_speed);
 		check_current_speed();
-		System.out.println("New Current Speed: " + current_speed);
+		// debug information
+//		System.out.println("New Current Speed: " + current_speed);
 		return moved_length;
 	}
 	
@@ -68,7 +81,6 @@ public class Car {
 		if (use_nitro && current_speed > 0 && current_speed != top_speed) {
 			nitro();
 		} else if (close_to_other_car) {
-			System.out.println("HANDLING");
 			current_speed *= HANDLING_FACTOR;
 		}
 		check_current_speed();
@@ -80,7 +92,6 @@ public class Car {
 	 */
 	private boolean nitro() {
 		if (!nitroed) {
-			System.out.println("NITRO!");
 			nitroed = true;
 			current_speed *= 2.0;
 			return true;
@@ -93,7 +104,6 @@ public class Car {
 	 */
 	private void check_current_speed() {
 		if(current_speed > top_speed) {
-			System.out.println("Reached Top Speed");
 			current_speed = top_speed;
 		}
 	}

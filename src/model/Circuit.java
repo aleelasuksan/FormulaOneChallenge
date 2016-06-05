@@ -5,6 +5,11 @@ import java.util.HashMap;
 /**
  * Circuit class to handle assessment tasks and store information related to racing 
  * (rank, current position of car, cars, result, time)
+ * Circuit have a car which required to perform a race.
+ * Circuit function focus in race information.
+ * Major function is assess which use to calculate all necessary information such as rank of car, etc. then invoke car's assess function.
+ * Some private function use to perform a calculation (calculate a actual time and velocity when car finish a race, update rank of car) 
+ * or event status (last place, use nitro for example)
  * @author Atit Leelasuksan
  *
  */
@@ -73,14 +78,16 @@ public class Circuit {
 	public void assess() {
 		if (!this.is_finished()) {
 			for (int i = 0 ; i < amount_of_team ; i++) {
-				if (car_to_finish_time.containsKey(i+1)) continue;
-				System.out.println("Team: " + (i+1));
-				System.out.println("Current Speed: " + cars[i].current_speed);
 				double position = car_to_position.get(i+1);
-				System.out.println("Current Position: " + position);
+				// debug information
+//				System.out.println("Team: " + (i+1));
+//				System.out.println("Current Speed: " + cars[i].current_speed);
+//				System.out.println("Current Position: " + position);
+				if (position >= length) continue;
 				int rank = car_to_rank[i];
 				double moved_length = cars[i].assess(2);
-				System.out.println("Moved Length: " + moved_length);
+				// debug information
+//				System.out.println("Moved Length: " + moved_length);
 				position += moved_length;
 				car_to_position.put(i+1, position);
 				update_rank(i+1, rank);
@@ -97,9 +104,11 @@ public class Circuit {
 			}
 			
 			for(int i = 0 ; i < amount_of_team ; i++) {
-				System.out.println("Team: " + (i+1));
 				double position = car_to_position.get(i+1);
-				System.out.println("POSITION: " + position);
+				// debug information
+//				System.out.println("Team: " + (i+1));
+//				System.out.println("POSITION: " + position);
+				if (position >= length) continue;
 				int rank = car_to_rank[i];
 				boolean nitro = false;
 				if (rank == amount_of_team) nitro = true;
@@ -107,11 +116,13 @@ public class Circuit {
 				if (amount_of_team > 1) close_to_other_car = check_close_to_car(position, rank);
 				Car car = cars[i];
 				car.handling_close_car_and_nitro(nitro, close_to_other_car);
-				System.out.println("New Current Speed After Handling: " + car.current_speed);
+				// debug information
+//				System.out.println("New Current Speed After Handling: " + car.current_speed);
 			}
 			time_pass += 2;
-			System.out.println("TIME: " + time_pass);
-			System.out.println();
+			// debug information
+//			System.out.println("TIME: " + time_pass);
+//			System.out.println();
 		} else {
 			System.out.println("Racing finished, nothing to assess.");
 		}
